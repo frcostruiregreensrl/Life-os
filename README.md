@@ -38,22 +38,35 @@ npm run start   # avvia la build di produzione
 | `DATABASE_URL`    | No (default `./data.db`) | Percorso del file SQLite                               |
 | `SESSION_SECRET`  | Sì in produzione       | Segreto per firmare i cookie di sessione                 |
 | `NODE_ENV`        | No                     | `development` / `production`                             |
+| `ANTHROPIC_API_KEY` | Sì, per l'onboarding vocale | Chiave API Claude (console.anthropic.com) usata dall'assistente di configurazione al primo avvio. Senza questa variabile l'onboarding mostra un errore e l'utente può comunque saltarlo. |
+| `ANTHROPIC_ONBOARDING_MODEL` | No (default `claude-sonnet-5`) | Modello Claude usato per la conversazione di onboarding |
 
 ## Autenticazione
 
 Autenticazione multi-utente con email + password, hashing con `scrypt` (nativo Node, salted) e sessioni server-side (`express-session`, cookie httpOnly). Ogni riga di dati nel database è collegata a `userId`: ogni utente vede e modifica solo i propri dati.
+
+## Onboarding con assistente vocale
+
+Al primo accesso (subito dopo la registrazione, prima di vedere la dashboard) l'utente viene guidato in `/onboarding`: un assistente conversazionale basato su Claude (Anthropic, con tool use) fa qualche domanda a voce — orario di fine lavoro, obiettivi, quali moduli attivare tra dieta/salute/agenda/spese, luoghi chiave, target nutrizionali, obiettivo di sonno, ed eventuale tracking del ciclo mestruale (opzionale, disattivato di default) — e configura davvero l'app scrivendo nel database mentre parla, non solo a fine conversazione.
+
+Dettagli tecnici:
+- Riconoscimento vocale in ingresso (`SpeechRecognition`, con fallback a testo se il browser non lo supporta) e sintesi vocale in uscita (`speechSynthesis`) — nessun servizio esterno per voce, tutto nel browser.
+- Il "cervello" della conversazione è server-side (`server/onboarding.ts`), usa il tool use di Claude per chiamare funzioni tipizzate (`update_profile`, `set_enabled_modules`, `add_place`, `set_nutrition_targets`, `set_sleep_goal`, `enable_cycle_tracking`, `finish_onboarding`) che scrivono su `userSettings`, `places`, `nutritionTargets`.
+- L'utente può sempre saltare (`Salta per ora`) e completare la configurazione più avanti; se `ANTHROPIC_API_KEY` non è configurata, l'onboarding mostra un messaggio chiaro e offre lo skip invece di bloccare l'accesso all'app.
+- Finché l'onboarding non è completato (o saltato), ogni route protetta reindirizza automaticamente a `/onboarding`.
 
 ## Stato di avanzamento moduli
 
 | Modulo                     | Stato                                     |
 | --------------------------- | ------------------------------------------ |
 | Autenticazione multi-utente | ✅ Completo                                |
+| Onboarding con assistente vocale | ✅ Completo (richiede `ANTHROPIC_API_KEY`) |
 | Dashboard / shell           | ✅ Completo                                |
 | To-do list                  | ✅ Completo (CRUD, priorità, scadenza)     |
 | Routine / abitudini         | ✅ MVP (tracking giornaliero + streak semplice) |
-| Dieta                       | 🕓 Schema dati pronto, UI non ancora implementata |
-| Salute (sonno, ciclo)       | 🕓 Schema dati pronto, UI non ancora implementata |
-| Agenda intelligente         | 🕓 Schema dati pronto, UI non ancora implementata |
+| Dieta                       | 🕓 Schema dati pronto (+ target impostabili in onboarding), UI non ancora implementata |
+| Salute (sonno, ciclo)       | 🕓 Schema dati pronto (+ obiettivo sonno/ciclo impostabili in onboarding), UI non ancora implementata |
+| Agenda intelligente         | 🕓 Schema dati pronto (+ luoghi chiave impostabili in onboarding), UI non ancora implementata |
 | Spese e risparmi            | 🕓 Schema dati pronto, UI non ancora implementata |
 | Gamification avanzata       | 🕓 Schema dati pronto (streak con salvagenti, sfide) |
 | Riepiloghi settimanali/mensili | 🕓 Schema dati pronto, UI non ancora implementata |
@@ -70,11 +83,12 @@ Lo schema Drizzle (`shared/schema.ts`) copre già tutte le tabelle previste dall
 client/       Frontend React (Vite)
   src/
     components/   Componenti condivisi (shell, ui/ in stile shadcn)
-    pages/        Pagine dell'app
-    lib/          Query client, contesto auth, utility
+    pages/        Pagine dell'app (incl. Onboarding.tsx, chat immersiva)
+    lib/          Query client, contesto auth, speech.ts (TTS/STT), utility
 server/       Backend Express
-  routes/        Router per singolo modulo (todos, habits)
+  routes/        Router per singolo modulo (todos, habits, onboarding)
   auth.ts        Router di autenticazione + middleware requireAuth
+  onboarding.ts   Conversazione con Claude (tool use) per l'onboarding
   db.ts          Connessione Drizzle/SQLite
   storage.ts      Data access layer
 shared/       Codice condiviso tra client e server
