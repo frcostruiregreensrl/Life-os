@@ -4,6 +4,7 @@ import { createSessionMiddleware } from "./session";
 import { createAuthRouter } from "./auth";
 import { createTodosRouter } from "./routes/todos";
 import { createHabitsRouter } from "./routes/habits";
+import { createOnboardingRouter } from "./routes/onboarding";
 
 export async function registerRoutes(_httpServer: Server, app: Express) {
   app.use(createSessionMiddleware());
@@ -11,4 +12,5 @@ export async function registerRoutes(_httpServer: Server, app: Express) {
   app.use("/api/auth", createAuthRouter());
   app.use("/api/todos", createTodosRouter());
   app.use("/api/habits", createHabitsRouter());
+  app.use("/api/onboarding", createOnboardingRouter());
 }
