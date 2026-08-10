@@ -14,7 +14,7 @@ import Habits from "@/pages/Habits";
 import More from "@/pages/More";
 import NotFound from "@/pages/NotFound";
 
-const COMPANION_EXCLUDED_PATHS = ["/onboarding"];
+const COMPANION_EXCLUDED_PATHS = ["/onboarding", "/register", "/todos"];
 
 function GlobalCompanion() {
   const [location] = useLocation();

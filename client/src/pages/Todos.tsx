@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select } from "@/components/ui/select";
+import { FormGuide } from "@/components/FormGuide";
 import { celebrateCompanion } from "@/lib/companionBus";
 import { cn } from "@/lib/utils";
 import type { Todo } from "@shared/schema";
@@ -25,10 +26,12 @@ export default function Todos() {
   const queryClient = useQueryClient();
   const { data: todos, isLoading } = useQuery<Todo[]>({ queryKey: ["/api/todos"] });
   const inputRef = useRef<HTMLInputElement>(null);
+  const dateRef = useRef<HTMLInputElement>(null);
 
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState("");
+  const [completedCount, setCompletedCount] = useState(0);
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -42,6 +45,7 @@ export default function Todos() {
       setTitle("");
       setDueDate("");
       setPriority("medium");
+      setCompletedCount(0);
       queryClient.invalidateQueries({ queryKey: ["/api/todos"] });
       celebrateCompanion("aggiunta!");
     },
@@ -63,6 +67,7 @@ export default function Todos() {
 
   return (
     <div className="relative flex flex-col gap-4 py-2">
+      <FormGuide targets={[inputRef, dateRef]} completedCount={completedCount} />
       <h2 className="font-display text-2xl text-foreground">To-do</h2>
 
       <form
@@ -77,27 +82,21 @@ export default function Todos() {
           placeholder="Cosa devi fare?"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          onBlur={(e) => e.target.value.trim() && celebrateCompanion()}
+          onBlur={(e) => e.target.value.trim() && completedCount === 0 && setCompletedCount(1)}
         />
         <div className="flex gap-2">
-          <Select
-            value={priority}
-            onChange={(e) => {
-              setPriority(e.target.value);
-              celebrateCompanion();
-            }}
-            className="flex-1"
-          >
+          <Select value={priority} onChange={(e) => setPriority(e.target.value)} className="flex-1">
             <option value="low">Bassa</option>
             <option value="medium">Media</option>
             <option value="high">Alta</option>
           </Select>
           <Input
+            ref={dateRef}
             type="date"
             value={dueDate}
             onChange={(e) => {
               setDueDate(e.target.value);
-              if (e.target.value) celebrateCompanion();
+              if (e.target.value && completedCount <= 1) setCompletedCount(2);
             }}
             className="flex-1"
           />
