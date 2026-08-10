@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Mic, Send, SkipForward, Sparkles } from "lucide-react";
+import { Mic, Send, SkipForward } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import { getSpeechRecognition, speak, stopSpeaking } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
+import { Robot, type RobotState } from "@/components/Robot";
 import { cn } from "@/lib/utils";
 import type { Place, UserSettings, NutritionTargets } from "@shared/schema";
 
@@ -37,8 +38,11 @@ export default function Onboarding() {
     nutritionTargets: null,
   });
   const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
+  const [celebrate, setCelebrate] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const startedRef = useRef(false);
+  const prevDoneCountRef = useRef(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -56,7 +60,11 @@ export default function Onboarding() {
       setSnapshot({ settings: data.settings, places: data.places, nutritionTargets: data.nutritionTargets });
       if (data.reply) {
         setChat((prev) => [...prev, { role: "assistant", text: data.reply }]);
-        speak(data.reply);
+        speak(
+          data.reply,
+          () => setSpeaking(true),
+          () => setSpeaking(false),
+        );
       }
       if (data.done) {
         queryClient.setQueryData(["/api/onboarding/status"], {
@@ -133,16 +141,50 @@ export default function Onboarding() {
     { label: "Luoghi", done: snapshot.places.length > 0 },
   ];
 
+  const doneCount = chips.filter((c) => c.done).length;
+  const currentFocus = chips.find((c) => !c.done)?.label;
+
+  useEffect(() => {
+    if (doneCount > prevDoneCountRef.current) {
+      setCelebrate(true);
+      const timeout = setTimeout(() => setCelebrate(false), 650);
+      prevDoneCountRef.current = doneCount;
+      return () => clearTimeout(timeout);
+    }
+    prevDoneCountRef.current = doneCount;
+  }, [doneCount]);
+
+  const robotState: RobotState = listening
+    ? "listening"
+    : speaking
+      ? "speaking"
+      : sendMutation.isPending
+        ? "thinking"
+        : "idle";
+
   if (authLoading || !user) return null;
 
   return (
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))]">
-        <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15">
-            <Sparkles className="h-4 w-4 text-primary" />
+        <div className="flex items-center gap-3">
+          <Robot state={robotState} celebrate={celebrate} size={52} />
+          <div>
+            <span className="font-display block text-sm text-foreground">Configurazione Life OS</span>
+            <span className="font-data block text-[0.65rem] text-muted-foreground">
+              {celebrate
+                ? "fatto!"
+                : listening
+                  ? "ti ascolto..."
+                  : speaking
+                    ? "sto parlando..."
+                    : sendMutation.isPending
+                      ? "sto pensando..."
+                      : currentFocus
+                        ? `ora: ${currentFocus.toLowerCase()}`
+                        : "pronto"}
+            </span>
           </div>
-          <span className="font-display text-sm text-foreground">Configurazione Life OS</span>
         </div>
         <Button
           variant="ghost"

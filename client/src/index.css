@@ -87,3 +87,50 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+@keyframes robot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes robot-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.15); }
+}
+@keyframes robot-ring {
+  0% { transform: scale(0.85); opacity: 0.55; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+@keyframes robot-eq {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(1); }
+}
+@keyframes robot-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+@keyframes robot-celebrate {
+  0% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-9px) rotate(-9deg); }
+  50% { transform: translateY(0) rotate(7deg); }
+  75% { transform: translateY(-5px) rotate(-4deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+@keyframes robot-antenna {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .robot-idle { animation: robot-bob 3.2s ease-in-out infinite; }
+  .robot-eye-blink { animation: robot-blink 4.5s ease-in-out infinite; }
+  .robot-antenna-light { animation: robot-antenna 1.6s ease-in-out infinite; }
+  .robot-ring { animation: robot-ring 1.4s ease-out infinite; }
+  .robot-ring-delay { animation-delay: 0.5s; }
+  .robot-eq-bar { animation: robot-eq 0.9s ease-in-out infinite; }
+  .robot-think-dot { animation: robot-dot 1.2s ease-in-out infinite; }
+  .robot-celebrate { animation: robot-celebrate 0.6s ease-in-out; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robot-ring { opacity: 0.3; }
+}

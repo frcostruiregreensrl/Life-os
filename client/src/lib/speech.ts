@@ -1,11 +1,17 @@
-export function speak(text: string) {
-  if (!("speechSynthesis" in window) || !text) return;
+export function speak(text: string, onStart?: () => void, onEnd?: () => void) {
+  if (!("speechSynthesis" in window) || !text) {
+    onEnd?.();
+    return;
+  }
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "it-IT";
   utterance.rate = 1;
   const italianVoice = window.speechSynthesis.getVoices().find((v) => v.lang.startsWith("it"));
   if (italianVoice) utterance.voice = italianVoice;
+  utterance.onstart = () => onStart?.();
+  utterance.onend = () => onEnd?.();
+  utterance.onerror = () => onEnd?.();
   window.speechSynthesis.speak(utterance);
 }
 
