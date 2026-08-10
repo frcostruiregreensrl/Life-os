@@ -41,14 +41,34 @@ npm run start   # avvia la build di produzione
 
 ### Variabili d'ambiente
 
+Copia `.env.example` in `.env` (viene caricato in automatico da `npm run dev`/`npm run start`,
+e non va mai committato):
+
+```bash
+cp .env.example .env
+```
+
 | Variabile        | Obbligatoria         | Descrizione                                             |
 | ----------------- | --------------------- | -------------------------------------------------------- |
 | `PORT`            | No (default `5000`)   | Porta su cui il server ascolta                           |
 | `DATABASE_URL`    | No (default `./data.db`) | Percorso del file SQLite                               |
 | `SESSION_SECRET`  | Sì in produzione       | Segreto per firmare i cookie di sessione                 |
 | `NODE_ENV`        | No                     | `development` / `production`                             |
-| `ANTHROPIC_API_KEY` | Sì, per l'onboarding vocale | Chiave API Claude (console.anthropic.com) usata dall'assistente di configurazione al primo avvio. Senza questa variabile l'onboarding mostra un errore e l'utente può comunque saltarlo. |
+| `ANTHROPIC_API_KEY` | Sì, per l'onboarding vocale | Chiave API Claude usata dall'assistente di configurazione al primo avvio. Senza questa variabile l'onboarding mostra un errore e l'utente può comunque saltarlo. |
 | `ANTHROPIC_ONBOARDING_MODEL` | No (default `claude-sonnet-5`) | Modello Claude usato per la conversazione di onboarding |
+
+**Come ottenere `ANTHROPIC_API_KEY`** (è una chiave API a consumo, diversa dall'abbonamento a
+Claude.ai — se non l'hai mai usata dovrai registrare una carta, l'onboarding costa pochi centesimi
+a conversazione):
+
+1. Vai su [console.anthropic.com](https://console.anthropic.com) e crea un account (o accedi).
+2. Nel menu a sinistra apri **Settings → Billing** e aggiungi un metodo di pagamento — l'API è a
+   consumo, senza billing attivo le richieste falliscono.
+3. Vai su **API Keys → Create Key**, dalle un nome (es. "Life OS locale") e copiala: viene
+   mostrata **una sola volta**.
+4. Incollala in `.env` come `ANTHROPIC_API_KEY=sk-ant-...`.
+5. In produzione (Railway) imposta la stessa variabile nelle **Variables** del servizio, non nel
+   file `.env` (che resta solo per lo sviluppo locale).
 
 ## Autenticazione
 
