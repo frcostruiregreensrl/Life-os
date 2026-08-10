@@ -10,6 +10,15 @@ Life OS è una web app personale (PWA) per gestire la vita quotidiana a 360 grad
 - **PWA**: manifest + service worker via `vite-plugin-pwa`, installabile su smartphone
 - **Deploy**: Railway (`railway.json` / `nixpacks.toml`)
 
+## Identità visiva
+
+Layout mobile-first stile app nativa (tab bar in basso, niente sidebar da dashboard web), tema
+scuro "centro di controllo": fondo quasi nero, ciano come colore d'azione primario, ambra per gli
+stati di media priorità/attenzione. Tipografia a tre ruoli: **Tektur** per titoli e numeri grandi,
+**Instrument Sans** per l'interfaccia, **Red Hat Mono** per dati tabulari (streak, date, orari).
+I font sono self-hosted in `client/public/fonts` (licenza OFL, vedi i rispettivi `*-OFL.txt`) per
+funzionare offline da PWA installata.
+
 ## Setup locale
 
 Requisiti: Node.js 22+.
