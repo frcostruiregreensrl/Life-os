@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select } from "@/components/ui/select";
+import { FormCompanion } from "@/components/FormCompanion";
 import { cn } from "@/lib/utils";
 import type { Todo } from "@shared/schema";
 
@@ -28,6 +29,7 @@ export default function Todos() {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("medium");
   const [dueDate, setDueDate] = useState("");
+  const [activeField, setActiveField] = useState<HTMLElement | null>(null);
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -61,6 +63,7 @@ export default function Todos() {
 
   return (
     <div className="relative flex flex-col gap-4 py-2">
+      <FormCompanion activeField={activeField} />
       <h2 className="font-display text-2xl text-foreground">To-do</h2>
 
       <form
@@ -75,14 +78,26 @@ export default function Todos() {
           placeholder="Cosa devi fare?"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onFocus={(e) => setActiveField(e.currentTarget)}
         />
         <div className="flex gap-2">
-          <Select value={priority} onChange={(e) => setPriority(e.target.value)} className="flex-1">
+          <Select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            onFocus={(e) => setActiveField(e.currentTarget)}
+            className="flex-1"
+          >
             <option value="low">Bassa</option>
             <option value="medium">Media</option>
             <option value="high">Alta</option>
           </Select>
-          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="flex-1" />
+          <Input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            onFocus={(e) => setActiveField(e.currentTarget)}
+            className="flex-1"
+          />
           <Button type="submit" size="icon" disabled={createMutation.isPending || !title.trim()}>
             <Plus className="h-4 w-4" />
           </Button>

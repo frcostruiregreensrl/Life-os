@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { FormCompanion } from "@/components/FormCompanion";
 
 export default function Register() {
   const { user, register } = useAuth();
@@ -15,6 +16,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [activeField, setActiveField] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     if (user) setLocation("/");
@@ -35,6 +37,7 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
+      <FormCompanion activeField={activeField} />
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Crea il tuo account</CardTitle>
@@ -44,11 +47,24 @@ export default function Register() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="name">Nome</Label>
-              <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+              <Input
+                id="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onFocus={(e) => setActiveField(e.currentTarget)}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onFocus={(e) => setActiveField(e.currentTarget)}
+              />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="password">Password</Label>
@@ -59,6 +75,7 @@ export default function Register() {
                 minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={(e) => setActiveField(e.currentTarget)}
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
