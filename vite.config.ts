@@ -13,8 +13,8 @@ export default defineConfig({
         name: "Life OS",
         short_name: "Life OS",
         description: "La tua vita quotidiana, organizzata in un unico posto.",
-        theme_color: "#0f172a",
-        background_color: "#0f172a",
+        theme_color: "#0A0C0D",
+        background_color: "#0A0C0D",
         display: "standalone",
         start_url: "/",
         icons: [

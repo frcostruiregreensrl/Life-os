@@ -136,18 +136,18 @@ export default function Onboarding() {
   if (authLoading || !user) return null;
 
   return (
-    <div className="flex h-screen flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+    <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/20">
-            <Sparkles className="h-4 w-4 text-sky-400" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15">
+            <Sparkles className="h-4 w-4 text-primary" />
           </div>
-          <span className="text-sm font-medium text-slate-300">Configurazione Life OS</span>
+          <span className="font-display text-sm text-foreground">Configurazione Life OS</span>
         </div>
         <Button
           variant="ghost"
           size="sm"
-          className="gap-1 text-slate-400 hover:text-slate-100"
+          className="gap-1 text-muted-foreground hover:text-foreground"
           onClick={() => skipMutation.mutate()}
           disabled={skipMutation.isPending}
         >
@@ -161,8 +161,8 @@ export default function Onboarding() {
           <span
             key={chip.label}
             className={cn(
-              "shrink-0 rounded-full border px-3 py-1 text-xs",
-              chip.done ? "border-sky-500/50 bg-sky-500/10 text-sky-300" : "border-slate-700 text-slate-500",
+              "font-data shrink-0 rounded-full border px-3 py-1 text-xs",
+              chip.done ? "border-primary/50 bg-primary/10 text-primary" : "border-border text-muted-foreground",
             )}
           >
             {chip.label}
@@ -178,20 +178,20 @@ export default function Onboarding() {
               className={cn(
                 "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                 msg.role === "assistant"
-                  ? "self-start rounded-tl-sm bg-slate-800 text-slate-100"
-                  : "self-end rounded-tr-sm bg-sky-600 text-white",
+                  ? "self-start rounded-tl-sm bg-card text-foreground"
+                  : "self-end rounded-tr-sm bg-primary text-primary-foreground",
               )}
             >
               {msg.text}
             </div>
           ))}
           {sendMutation.isPending && (
-            <div className="self-start rounded-2xl rounded-tl-sm bg-slate-800 px-4 py-2.5 text-sm text-slate-400">
+            <div className="self-start rounded-2xl rounded-tl-sm bg-card px-4 py-2.5 text-sm text-muted-foreground">
               Sto scrivendo...
             </div>
           )}
           {error && (
-            <div className="self-center rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-center text-sm text-amber-300">
+            <div className="self-center rounded-xl border border-warning/40 bg-warning/10 px-4 py-3 text-center text-sm text-warning">
               {error}
               <div className="mt-2">
                 <Button size="sm" variant="secondary" onClick={() => skipMutation.mutate()}>
@@ -204,14 +204,14 @@ export default function Onboarding() {
         </div>
       </main>
 
-      <div className="border-t border-slate-800 bg-slate-950/80 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
+      <div className="border-t border-border bg-background/80 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
         <div className="mx-auto flex max-w-lg items-center gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend(input)}
             placeholder="Scrivi o usa il microfono..."
-            className="flex-1 rounded-full border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="flex-1 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
           {micAvailable && (
             <Button
