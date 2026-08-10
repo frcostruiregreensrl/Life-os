@@ -1,8 +1,9 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { AuthProvider } from "@/lib/auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { Companion } from "@/components/Companion";
 import { Placeholder } from "@/pages/Placeholder";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -13,10 +14,19 @@ import Habits from "@/pages/Habits";
 import More from "@/pages/More";
 import NotFound from "@/pages/NotFound";
 
+const COMPANION_EXCLUDED_PATHS = ["/onboarding"];
+
+function GlobalCompanion() {
+  const [location] = useLocation();
+  if (COMPANION_EXCLUDED_PATHS.includes(location)) return null;
+  return <Companion />;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <GlobalCompanion />
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { FormCompanion } from "@/components/FormCompanion";
+import { celebrateCompanion } from "@/lib/companionBus";
 
 export default function Register() {
   const { user, register } = useAuth();
@@ -16,7 +16,10 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [activeField, setActiveField] = useState<HTMLElement | null>(null);
+
+  function celebrateIfFilled(value: string) {
+    if (value.trim()) celebrateCompanion();
+  }
 
   useEffect(() => {
     if (user) setLocation("/");
@@ -37,7 +40,6 @@ export default function Register() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <FormCompanion activeField={activeField} />
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Crea il tuo account</CardTitle>
@@ -52,7 +54,7 @@ export default function Register() {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                onFocus={(e) => setActiveField(e.currentTarget)}
+                onBlur={(e) => celebrateIfFilled(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -63,7 +65,7 @@ export default function Register() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                onFocus={(e) => setActiveField(e.currentTarget)}
+                onBlur={(e) => celebrateIfFilled(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-2">
@@ -75,7 +77,7 @@ export default function Register() {
                 minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onFocus={(e) => setActiveField(e.currentTarget)}
+                onBlur={(e) => celebrateIfFilled(e.target.value)}
               />
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}

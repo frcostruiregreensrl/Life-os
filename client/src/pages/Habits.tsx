@@ -4,7 +4,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RobotPopup } from "@/components/RobotPopup";
+import { celebrateCompanion } from "@/lib/companionBus";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitLog } from "@shared/schema";
 
@@ -20,7 +20,6 @@ export default function Habits() {
   const { data: habits, isLoading } = useQuery<HabitWithStreak[]>({ queryKey: ["/api/habits"] });
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [popup, setPopup] = useState<{ habitId: number; message?: string } | null>(null);
   const prevStreaksRef = useRef<Record<number, number>>({});
 
   useEffect(() => {
@@ -29,7 +28,7 @@ export default function Habits() {
       const prevStreak = prevStreaksRef.current[habit.id];
       if (prevStreak !== undefined && habit.streak > prevStreak) {
         const milestone = STREAK_MILESTONES.includes(habit.streak);
-        setPopup({ habitId: habit.id, message: milestone ? `${habit.streak} giorni! 🔥` : undefined });
+        celebrateCompanion(milestone ? `${habit.streak} giorni! 🔥` : undefined);
       }
       prevStreaksRef.current[habit.id] = habit.streak;
     }
@@ -37,14 +36,13 @@ export default function Habits() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/habits", { name });
-      return res.json();
+      await apiRequest("POST", "/api/habits", { name });
     },
-    onSuccess: (data: Habit) => {
+    onSuccess: () => {
       setName("");
       setShowForm(false);
       queryClient.invalidateQueries({ queryKey: ["/api/habits"] });
-      setPopup({ habitId: data.id });
+      celebrateCompanion();
     },
   });
 
@@ -101,9 +99,6 @@ export default function Habits() {
           const fraction = Math.min(habit.streak / 14, 1);
           return (
             <div key={habit.id} className="group relative flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center">
-              {popup?.habitId === habit.id && (
-                <RobotPopup message={popup.message} onDone={() => setPopup(null)} />
-              )}
               <button
                 onClick={() => deleteMutation.mutate(habit.id)}
                 className="absolute right-2 top-2 rounded-lg p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"
