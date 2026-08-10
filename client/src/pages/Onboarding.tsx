@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import { apiRequest } from "@/lib/queryClient";
 import { getSpeechRecognition, speak, stopSpeaking } from "@/lib/speech";
 import { Button } from "@/components/ui/button";
-import { Robot, type RobotState } from "@/components/Robot";
+import { Robot, type Face } from "@/components/Robot";
 import { cn } from "@/lib/utils";
 import type { Place, UserSettings, NutritionTargets } from "@shared/schema";
 
@@ -154,13 +154,7 @@ export default function Onboarding() {
     prevDoneCountRef.current = doneCount;
   }, [doneCount]);
 
-  const robotState: RobotState = listening
-    ? "listening"
-    : speaking
-      ? "speaking"
-      : sendMutation.isPending
-        ? "thinking"
-        : "idle";
+  const faceState: Face = listening ? "listening" : speaking ? "speaking" : sendMutation.isPending ? "thinking" : "idle";
 
   if (authLoading || !user) return null;
 
@@ -168,7 +162,7 @@ export default function Onboarding() {
     <div className="flex h-screen flex-col bg-background text-foreground">
       <header className="flex items-center justify-between px-4 pt-[max(1rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-3">
-          <Robot state={robotState} celebrate={celebrate} size={52} />
+          <Robot face={faceState} action={celebrate ? "jump" : "idle"} size={52} />
           <div>
             <span className="font-display block text-sm text-foreground">Configurazione Life OS</span>
             <span className="font-data block text-[0.65rem] text-muted-foreground">

@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { Robot } from "@/components/Robot";
+import { Robot, type Action } from "@/components/Robot";
 import { onCompanionCelebrate } from "@/lib/companionBus";
 
-const ROBOT_SIZE = 46;
+const SIZE = 46;
 const MARGIN = 18;
 const TOP_SAFE = 84;
 const BOTTOM_SAFE = 100;
+const WALK_MS = 1800;
+const DANCE_MS = 2300;
 
 function randomPoint() {
-  const maxLeft = Math.max(MARGIN, window.innerWidth - ROBOT_SIZE - MARGIN);
-  const maxTop = Math.max(TOP_SAFE, window.innerHeight - ROBOT_SIZE - BOTTOM_SAFE);
+  const maxLeft = Math.max(MARGIN, window.innerWidth - SIZE - MARGIN);
+  const maxTop = Math.max(TOP_SAFE, window.innerHeight - SIZE - BOTTOM_SAFE);
   return {
     left: MARGIN + Math.random() * (maxLeft - MARGIN),
     top: TOP_SAFE + Math.random() * (maxTop - TOP_SAFE),
@@ -18,30 +20,38 @@ function randomPoint() {
 
 export function Companion() {
   const [pos, setPos] = useState(randomPoint);
-  const [dancing, setDancing] = useState(false);
+  const [action, setAction] = useState<Action>("idle");
   const [message, setMessage] = useState<string | undefined>();
-  const dancingRef = useRef(false);
+  const busyRef = useRef(false);
   const wanderTimer = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     function tick() {
-      if (!dancingRef.current) setPos(randomPoint());
-      wanderTimer.current = setTimeout(tick, 4500 + Math.random() * 4000);
+      if (!busyRef.current) {
+        busyRef.current = true;
+        setAction("walk");
+        setPos(randomPoint());
+        setTimeout(() => {
+          setAction("idle");
+          busyRef.current = false;
+        }, WALK_MS);
+      }
+      wanderTimer.current = setTimeout(tick, 5000 + Math.random() * 4000);
     }
-    wanderTimer.current = setTimeout(tick, 4500 + Math.random() * 4000);
+    wanderTimer.current = setTimeout(tick, 5000 + Math.random() * 4000);
     return () => clearTimeout(wanderTimer.current);
   }, []);
 
   useEffect(() => {
     return onCompanionCelebrate(({ message }) => {
-      dancingRef.current = true;
-      setDancing(true);
+      busyRef.current = true;
+      setAction("dance");
       setMessage(message);
       const timer = setTimeout(() => {
-        dancingRef.current = false;
-        setDancing(false);
+        setAction("idle");
         setMessage(undefined);
-      }, 1500);
+        busyRef.current = false;
+      }, DANCE_MS);
       return () => clearTimeout(timer);
     });
   }, []);
@@ -49,14 +59,14 @@ export function Companion() {
   return (
     <div
       className="pointer-events-none fixed z-40 flex flex-col items-center gap-1 transition-all ease-in-out"
-      style={{ top: pos.top, left: pos.left, transitionDuration: "1800ms" }}
+      style={{ top: pos.top, left: pos.left, transitionDuration: `${WALK_MS}ms` }}
     >
       {message && (
         <span className="font-data whitespace-nowrap rounded-full bg-success/15 px-2 py-0.5 text-[0.6rem] text-success">
           {message}
         </span>
       )}
-      <Robot state="idle" celebrate={dancing} size={ROBOT_SIZE} />
+      <Robot action={action} size={SIZE} />
     </div>
   );
 }
