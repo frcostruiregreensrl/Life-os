@@ -10,6 +10,7 @@ import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
 import Todos from "@/pages/Todos";
 import Habits from "@/pages/Habits";
+import More from "@/pages/More";
 import NotFound from "@/pages/NotFound";
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
           <Route path="/habits">
             <ProtectedRoute>
               <Habits />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/more">
+            <ProtectedRoute>
+              <More />
             </ProtectedRoute>
           </Route>
           <Route path="/dieta">
