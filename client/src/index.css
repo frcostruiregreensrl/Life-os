@@ -108,16 +108,58 @@
   0%, 100% { transform: translateX(-2.4px); }
   50% { transform: translateX(2.4px); }
 }
-@keyframes robot-celebrate {
-  0% { transform: translateY(0) rotate(0deg); }
-  25% { transform: translateY(-9px) rotate(-9deg); }
-  50% { transform: translateY(0) rotate(7deg); }
-  75% { transform: translateY(-5px) rotate(-4deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
 @keyframes robot-antenna {
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
+}
+@keyframes char-walk-leg-l {
+  0%, 100% { transform: rotate(-24deg); }
+  50% { transform: rotate(24deg); }
+}
+@keyframes char-walk-leg-r {
+  0%, 100% { transform: rotate(24deg); }
+  50% { transform: rotate(-24deg); }
+}
+@keyframes char-walk-arm-l {
+  0%, 100% { transform: rotate(20deg); }
+  50% { transform: rotate(-20deg); }
+}
+@keyframes char-walk-arm-r {
+  0%, 100% { transform: rotate(-20deg); }
+  50% { transform: rotate(20deg); }
+}
+@keyframes char-jump-body {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-15px); }
+  55% { transform: translateY(-15px); }
+  100% { transform: translateY(0); }
+}
+@keyframes char-laugh-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+@keyframes char-macarena-arm-l {
+  0%, 8% { transform: rotate(0deg); }
+  20%, 33% { transform: rotate(-95deg); }
+  45%, 58% { transform: rotate(-165deg); }
+  70%, 83% { transform: rotate(-25deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes char-macarena-arm-r {
+  0%, 8% { transform: rotate(0deg); }
+  20%, 33% { transform: rotate(95deg); }
+  45%, 58% { transform: rotate(165deg); }
+  70%, 83% { transform: rotate(25deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes char-macarena-hip {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(7deg); }
+}
+@keyframes char-pull-arm {
+  0% { transform: rotate(-165deg); }
+  100% { transform: rotate(-10deg); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .robot-idle { animation: robot-bob 3.2s ease-in-out infinite; }
@@ -127,7 +169,16 @@
   .robot-ring-delay { animation-delay: 0.5s; }
   .robot-eq-bar { animation: robot-eq 0.9s ease-in-out infinite; }
   .robot-eye-scan { animation: robot-eye-scan 0.9s ease-in-out infinite; }
-  .robot-celebrate { animation: robot-celebrate 0.6s ease-in-out; }
+  .char-walk-leg-l { animation: char-walk-leg-l 0.5s ease-in-out infinite; }
+  .char-walk-leg-r { animation: char-walk-leg-r 0.5s ease-in-out infinite; }
+  .char-walk-arm-l { animation: char-walk-arm-l 0.5s ease-in-out infinite; }
+  .char-walk-arm-r { animation: char-walk-arm-r 0.5s ease-in-out infinite; }
+  .char-jump-body { animation: char-jump-body 0.55s ease-in-out; }
+  .char-laugh-shake { animation: char-laugh-shake 0.35s ease-in-out infinite; }
+  .char-macarena-arm-l { animation: char-macarena-arm-l 2.2s ease-in-out; }
+  .char-macarena-arm-r { animation: char-macarena-arm-r 2.2s ease-in-out; }
+  .char-macarena-hip { animation: char-macarena-hip 0.4s ease-in-out infinite; }
+  .char-pull-arm { animation: char-pull-arm 0.32s ease-out forwards; }
 }
 
 @media (prefers-reduced-motion: reduce) {
