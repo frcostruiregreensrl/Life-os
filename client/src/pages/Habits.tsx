@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { RobotPopup } from "@/components/RobotPopup";
 import { cn } from "@/lib/utils";
 import type { Habit, HabitLog } from "@shared/schema";
 
@@ -12,21 +13,38 @@ type HabitWithStreak = Habit & { streak: number; logs: HabitLog[] };
 const today = () => new Date().toISOString().slice(0, 10);
 const RADIUS = 24;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100];
 
 export default function Habits() {
   const queryClient = useQueryClient();
   const { data: habits, isLoading } = useQuery<HabitWithStreak[]>({ queryKey: ["/api/habits"] });
   const [name, setName] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [popup, setPopup] = useState<{ habitId: number; message?: string } | null>(null);
+  const prevStreaksRef = useRef<Record<number, number>>({});
+
+  useEffect(() => {
+    if (!habits) return;
+    for (const habit of habits) {
+      const prevStreak = prevStreaksRef.current[habit.id];
+      if (prevStreak !== undefined && habit.streak > prevStreak) {
+        const milestone = STREAK_MILESTONES.includes(habit.streak);
+        setPopup({ habitId: habit.id, message: milestone ? `${habit.streak} giorni! 🔥` : undefined });
+      }
+      prevStreaksRef.current[habit.id] = habit.streak;
+    }
+  }, [habits]);
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/habits", { name });
+      const res = await apiRequest("POST", "/api/habits", { name });
+      return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: Habit) => {
       setName("");
       setShowForm(false);
       queryClient.invalidateQueries({ queryKey: ["/api/habits"] });
+      setPopup({ habitId: data.id });
     },
   });
 
@@ -83,6 +101,9 @@ export default function Habits() {
           const fraction = Math.min(habit.streak / 14, 1);
           return (
             <div key={habit.id} className="group relative flex flex-col items-center gap-2 rounded-2xl border border-border bg-card p-4 text-center">
+              {popup?.habitId === habit.id && (
+                <RobotPopup message={popup.message} onDone={() => setPopup(null)} />
+              )}
               <button
                 onClick={() => deleteMutation.mutate(habit.id)}
                 className="absolute right-2 top-2 rounded-lg p-1 text-muted-foreground opacity-0 transition-opacity hover:text-destructive group-hover:opacity-100"

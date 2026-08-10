@@ -119,6 +119,16 @@
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
+@keyframes robot-pop-in {
+  0% { transform: scale(0.3) translateY(6px); opacity: 0; }
+  55% { transform: scale(1.18) translateY(-3px); opacity: 1; }
+  75% { transform: scale(0.94) translateY(0); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes robot-pop-out {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5); opacity: 0; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .robot-idle { animation: robot-bob 3.2s ease-in-out infinite; }
@@ -129,6 +139,8 @@
   .robot-eq-bar { animation: robot-eq 0.9s ease-in-out infinite; }
   .robot-think-dot { animation: robot-dot 1.2s ease-in-out infinite; }
   .robot-celebrate { animation: robot-celebrate 0.6s ease-in-out; }
+  .robot-pop-in { animation: robot-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .robot-pop-out { animation: robot-pop-out 0.25s ease-in forwards; }
 }
 
 @media (prefers-reduced-motion: reduce) {
