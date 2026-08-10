@@ -39,11 +39,24 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+      },
+      fontFamily: {
+        display: ["Tektur", "system-ui", "sans-serif"],
+        sans: ["Instrument Sans", "system-ui", "sans-serif"],
+        data: ["Red Hat Mono", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 6px)",
       },
     },
   },
