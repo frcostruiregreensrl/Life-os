@@ -6,6 +6,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Placeholder } from "@/pages/Placeholder";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
 import Todos from "@/pages/Todos";
 import Habits from "@/pages/Habits";
@@ -18,6 +19,7 @@ function App() {
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
+          <Route path="/onboarding" component={Onboarding} />
           <Route path="/">
             <ProtectedRoute>
               <Dashboard />
