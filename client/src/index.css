@@ -104,9 +104,9 @@
   0%, 100% { transform: scaleY(0.25); }
   50% { transform: scaleY(1); }
 }
-@keyframes robot-dot {
-  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
-  40% { opacity: 1; transform: translateY(-2px); }
+@keyframes robot-eye-scan {
+  0%, 100% { transform: translateX(-2.4px); }
+  50% { transform: translateX(2.4px); }
 }
 @keyframes robot-celebrate {
   0% { transform: translateY(0) rotate(0deg); }
@@ -119,17 +119,6 @@
   0%, 100% { opacity: 0.4; }
   50% { opacity: 1; }
 }
-@keyframes robot-pop-in {
-  0% { transform: scale(0.3) translateY(6px); opacity: 0; }
-  55% { transform: scale(1.18) translateY(-3px); opacity: 1; }
-  75% { transform: scale(0.94) translateY(0); }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-@keyframes robot-pop-out {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(0.5); opacity: 0; }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .robot-idle { animation: robot-bob 3.2s ease-in-out infinite; }
   .robot-eye-blink { animation: robot-blink 4.5s ease-in-out infinite; }
@@ -137,10 +126,8 @@
   .robot-ring { animation: robot-ring 1.4s ease-out infinite; }
   .robot-ring-delay { animation-delay: 0.5s; }
   .robot-eq-bar { animation: robot-eq 0.9s ease-in-out infinite; }
-  .robot-think-dot { animation: robot-dot 1.2s ease-in-out infinite; }
+  .robot-eye-scan { animation: robot-eye-scan 0.9s ease-in-out infinite; }
   .robot-celebrate { animation: robot-celebrate 0.6s ease-in-out; }
-  .robot-pop-in { animation: robot-pop-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1); }
-  .robot-pop-out { animation: robot-pop-out 0.25s ease-in forwards; }
 }
 
 @media (prefers-reduced-motion: reduce) {

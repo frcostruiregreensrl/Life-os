@@ -12,8 +12,8 @@ interface RobotProps {
 const EQ_BARS = [0, 0.15, 0.3, 0.45];
 
 export function Robot({ state, celebrate, size = 68, className }: RobotProps) {
-  const visorColor =
-    state === "listening" ? "hsl(var(--warning))" : "hsl(var(--primary))";
+  const pupilColor = state === "listening" ? "hsl(var(--warning))" : "hsl(var(--primary))";
+  const pupilRadius = state === "listening" ? 4.1 : 3.3;
 
   return (
     <div
@@ -34,50 +34,50 @@ export function Robot({ state, celebrate, size = 68, className }: RobotProps) {
       )}
 
       <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-        <circle cx="53" cy="10" r="3" className="robot-antenna-light" fill="hsl(var(--warning))" />
-        <line x1="53" y1="13" x2="53" y2="20" stroke="hsl(var(--muted-foreground))" strokeWidth="1.5" />
+        <line x1="32" y1="5" x2="32" y2="12" stroke="hsl(var(--muted-foreground))" strokeWidth="1.5" />
+        <circle cx="32" cy="4" r="2.6" className="robot-antenna-light" fill="hsl(var(--warning))" />
 
-        <rect x="14" y="16" width="36" height="28" rx="12" fill="hsl(var(--card))" stroke="hsl(var(--border))" strokeWidth="1.5" />
+        <circle cx="32" cy="31" r="21" fill="hsl(var(--card))" stroke="hsl(var(--border))" strokeWidth="1.5" />
+        <circle cx="8.5" cy="31" r="3" fill="hsl(var(--border))" />
+        <circle cx="55.5" cy="31" r="3" fill="hsl(var(--border))" />
 
-        <g className={state === "idle" ? "robot-eye-blink" : undefined} style={{ transformOrigin: "32px 30px" }}>
-          {state === "speaking" ? (
-            <g>
-              {EQ_BARS.map((delay, i) => (
-                <rect
-                  key={i}
-                  className="robot-eq-bar"
-                  x={22 + i * 6}
-                  y="24"
-                  width="3.4"
-                  height="12"
-                  rx="1.7"
-                  fill={visorColor}
-                  style={{ transformOrigin: `${22 + i * 6 + 1.7}px 30px`, animationDelay: `${delay}s` }}
-                />
-              ))}
-            </g>
-          ) : state === "thinking" ? (
-            <g>
-              {[0, 1, 2].map((i) => (
-                <circle
-                  key={i}
-                  className="robot-think-dot"
-                  cx={24 + i * 8}
-                  cy="30"
-                  r="2.4"
-                  fill={visorColor}
-                  style={{ animationDelay: `${i * 0.18}s` }}
-                />
-              ))}
-            </g>
-          ) : (
-            <rect x="21" y="26" width="22" height="8" rx="4" fill={visorColor} opacity={state === "listening" ? 1 : 0.9} />
-          )}
+        <g className={state === "idle" ? "robot-eye-blink" : undefined} style={{ transformOrigin: "32px 28px" }}>
+          <circle cx="22" cy="28" r="7.6" fill="hsl(var(--background))" />
+          <circle cx="42" cy="28" r="7.6" fill="hsl(var(--background))" />
+
+          <g className={state === "thinking" ? "robot-eye-scan" : undefined}>
+            <circle cx="22" cy="28" r={pupilRadius} fill={pupilColor} />
+            <circle cx="42" cy="28" r={pupilRadius} fill={pupilColor} />
+            <circle cx="20.3" cy="26.3" r="1.1" fill="hsl(var(--background))" opacity="0.9" />
+            <circle cx="40.3" cy="26.3" r="1.1" fill="hsl(var(--background))" opacity="0.9" />
+          </g>
         </g>
 
-        <rect x="24" y="47" width="16" height="6" rx="3" fill="hsl(var(--border))" />
-        <circle cx="10" cy="30" r="3" fill="hsl(var(--border))" />
-        <circle cx="54" cy="30" r="3" fill="hsl(var(--border))" />
+        {state === "speaking" ? (
+          <g>
+            {EQ_BARS.map((delay, i) => (
+              <rect
+                key={i}
+                className="robot-eq-bar"
+                x={22.5 + i * 5.3}
+                y="38"
+                width="3"
+                height="9"
+                rx="1.5"
+                fill="hsl(var(--primary))"
+                style={{ transformOrigin: `${22.5 + i * 5.3 + 1.5}px 42.5px`, animationDelay: `${delay}s` }}
+              />
+            ))}
+          </g>
+        ) : (
+          <path
+            d="M 25 41 Q 32 45.5 39 41"
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          />
+        )}
       </svg>
     </div>
   );
