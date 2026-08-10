@@ -5,6 +5,9 @@ import {
   todos,
   habits,
   habitLogs,
+  userSettings,
+  places,
+  nutritionTargets,
   type InsertTodo,
   type InsertHabit,
 } from "@shared/schema";
@@ -100,5 +103,50 @@ export const storage = {
     }
     const [log] = await db.insert(habitLogs).values({ userId, habitId, date, completed }).returning();
     return log;
+  },
+
+  async getUserSettings(userId: number) {
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
+    if (settings) return settings;
+    const [created] = await db.insert(userSettings).values({ userId }).returning();
+    return created;
+  },
+
+  async updateUserSettings(userId: number, data: Partial<typeof userSettings.$inferInsert>) {
+    await this.getUserSettings(userId);
+    const [settings] = await db
+      .update(userSettings)
+      .set(data)
+      .where(eq(userSettings.userId, userId))
+      .returning();
+    return settings;
+  },
+
+  async addPlace(userId: number, data: { name: string; category?: string; address?: string }) {
+    const [place] = await db.insert(places).values({ ...data, userId }).returning();
+    return place;
+  },
+
+  async listPlaces(userId: number) {
+    return db.select().from(places).where(eq(places.userId, userId));
+  },
+
+  async getNutritionTargets(userId: number) {
+    const [row] = await db.select().from(nutritionTargets).where(eq(nutritionTargets.userId, userId));
+    return row ?? null;
+  },
+
+  async upsertNutritionTargets(userId: number, data: Partial<typeof nutritionTargets.$inferInsert>) {
+    const [existing] = await db.select().from(nutritionTargets).where(eq(nutritionTargets.userId, userId));
+    if (existing) {
+      const [updated] = await db
+        .update(nutritionTargets)
+        .set(data)
+        .where(eq(nutritionTargets.userId, userId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(nutritionTargets).values({ ...data, userId }).returning();
+    return created;
   },
 };

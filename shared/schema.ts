@@ -130,7 +130,18 @@ export const userSettings = sqliteTable("user_settings", {
   userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
   cycleTrackingEnabled: integer("cycle_tracking_enabled", { mode: "boolean" }).notNull().default(false),
   theme: text("theme", { enum: ["system", "light", "dark"] }).notNull().default("system"),
+  onboardingCompleted: integer("onboarding_completed", { mode: "boolean" }).notNull().default(false),
+  birthDate: integer("birth_date", { mode: "timestamp" }),
+  workEndTime: text("work_end_time"),
+  generalGoals: text("general_goals"),
+  sleepGoalMinutes: integer("sleep_goal_minutes"),
+  dietModuleEnabled: integer("diet_module_enabled", { mode: "boolean" }).notNull().default(false),
+  healthModuleEnabled: integer("health_module_enabled", { mode: "boolean" }).notNull().default(false),
+  agendaModuleEnabled: integer("agenda_module_enabled", { mode: "boolean" }).notNull().default(false),
+  expensesModuleEnabled: integer("expenses_module_enabled", { mode: "boolean" }).notNull().default(false),
 });
+
+export type UserSettings = typeof userSettings.$inferSelect;
 
 // Fase 2 — Agenda intelligente
 
@@ -323,3 +334,6 @@ export type HabitLog = typeof habitLogs.$inferSelect;
 
 export type User = typeof users.$inferSelect;
 export type PublicUser = Omit<User, "passwordHash">;
+
+export type Place = typeof places.$inferSelect;
+export type NutritionTargets = typeof nutritionTargets.$inferSelect;
