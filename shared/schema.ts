@@ -139,6 +139,8 @@ export const userSettings = sqliteTable("user_settings", {
   healthModuleEnabled: integer("health_module_enabled", { mode: "boolean" }).notNull().default(false),
   agendaModuleEnabled: integer("agenda_module_enabled", { mode: "boolean" }).notNull().default(false),
   expensesModuleEnabled: integer("expenses_module_enabled", { mode: "boolean" }).notNull().default(false),
+  avatarSkinColor: text("avatar_skin_color"),
+  avatarAccentColor: text("avatar_accent_color"),
 });
 
 export type UserSettings = typeof userSettings.$inferSelect;
@@ -331,6 +333,13 @@ export const insertHabitSchema = createInsertSchema(habits, {
 export type Habit = typeof habits.$inferSelect;
 export type InsertHabit = z.infer<typeof insertHabitSchema>;
 export type HabitLog = typeof habitLogs.$inferSelect;
+
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Colore non valido");
+
+export const updateAvatarSchema = z.object({
+  avatarSkinColor: hexColor.nullable(),
+  avatarAccentColor: hexColor.nullable(),
+});
 
 export type User = typeof users.$inferSelect;
 export type PublicUser = Omit<User, "passwordHash">;
