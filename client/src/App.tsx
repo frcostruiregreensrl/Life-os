@@ -12,6 +12,7 @@ import Dashboard from "@/pages/Dashboard";
 import Todos from "@/pages/Todos";
 import Habits from "@/pages/Habits";
 import More from "@/pages/More";
+import AvatarSettings from "@/pages/AvatarSettings";
 import NotFound from "@/pages/NotFound";
 
 const COMPANION_EXCLUDED_PATHS = ["/onboarding", "/register", "/todos"];
@@ -49,6 +50,11 @@ function App() {
           <Route path="/more">
             <ProtectedRoute>
               <More />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/avatar">
+            <ProtectedRoute>
+              <AvatarSettings />
             </ProtectedRoute>
           </Route>
           <Route path="/dieta">

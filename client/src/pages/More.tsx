@@ -1,6 +1,8 @@
 import { Link } from "wouter";
 import { Utensils, HeartPulse, CalendarClock, Wallet, BarChart3, LogOut, ChevronRight } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import { useAvatarColors } from "@/lib/useAvatarColors";
+import { Robot } from "@/components/Robot";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -14,6 +16,7 @@ const modules = [
 
 export default function More() {
   const { user, logout } = useAuth();
+  const avatarColors = useAvatarColors();
 
   return (
     <div className="flex flex-col gap-6 py-2">
@@ -22,6 +25,16 @@ export default function More() {
         <h2 className="font-display text-2xl text-foreground">{user?.name}</h2>
         <p className="text-sm text-muted-foreground">{user?.email}</p>
       </div>
+
+      <Link href="/avatar">
+        <Card className="border-border/80 transition-colors hover:border-primary/40">
+          <CardContent className="flex items-center gap-3 p-4">
+            <Robot action="idle" size={36} skinColor={avatarColors.skinColor} accentColor={avatarColors.accentColor} />
+            <span className="flex-1 text-sm font-medium">Personalizza il tuo avatar</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </CardContent>
+        </Card>
+      </Link>
 
       <div className="flex flex-col gap-2">
         {modules.map((mod) => {
