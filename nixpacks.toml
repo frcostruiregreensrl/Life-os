@@ -2,3 +2,6 @@ providers = ['node']
 
 [phases.setup]
 nixPkgs = ['nodejs_22']
+
+[phases.install]
+cmds = ["npm ci --include=dev"]
