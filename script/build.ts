@@ -3,7 +3,6 @@ import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
 
 const allowlist = [
-  "better-sqlite3",
   "drizzle-orm",
   "drizzle-zod",
   "express",
