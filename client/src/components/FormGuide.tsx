@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { Robot, type Action } from "@/components/Robot";
 import { onCompanionCelebrate } from "@/lib/companionBus";
+import { useAvatarColors } from "@/lib/useAvatarColors";
 import { cn } from "@/lib/utils";
 
 const SIZE = 46;
@@ -33,6 +34,7 @@ function computeTarget(el: HTMLElement): Pos {
 }
 
 export function FormGuide({ waypoints, step }: FormGuideProps) {
+  const { skinColor, accentColor } = useAvatarColors();
   const [pos, setPos] = useState<Pos | null>(null);
   const [action, setAction] = useState<Action>("point");
   const [pointDir, setPointDir] = useState<"left" | "right">("left");
@@ -117,7 +119,7 @@ export function FormGuide({ waypoints, step }: FormGuideProps) {
       className={cn("pointer-events-none fixed z-40 transition-all ease-in-out")}
       style={{ top: pos.top, left: pos.left, transitionDuration: action === "walk" ? "560ms" : "200ms" }}
     >
-      <Robot action={action} pointDir={pointDir} size={SIZE} />
+      <Robot action={action} pointDir={pointDir} size={SIZE} skinColor={skinColor} accentColor={accentColor} />
     </div>
   );
 }

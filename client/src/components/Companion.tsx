@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Robot, type Action } from "@/components/Robot";
 import { onCompanionCelebrate } from "@/lib/companionBus";
+import { useAvatarColors } from "@/lib/useAvatarColors";
 
 const SIZE = 46;
 const MARGIN = 18;
@@ -19,6 +20,7 @@ function randomPoint() {
 }
 
 export function Companion() {
+  const { skinColor, accentColor } = useAvatarColors();
   const [pos, setPos] = useState(randomPoint);
   const [action, setAction] = useState<Action>("idle");
   const [message, setMessage] = useState<string | undefined>();
@@ -66,7 +68,7 @@ export function Companion() {
           {message}
         </span>
       )}
-      <Robot action={action} size={SIZE} />
+      <Robot action={action} size={SIZE} skinColor={skinColor} accentColor={accentColor} />
     </div>
   );
 }
