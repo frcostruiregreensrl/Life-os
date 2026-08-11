@@ -84,12 +84,26 @@ Dettagli tecnici:
 - L'utente può sempre saltare (`Salta per ora`) e completare la configurazione più avanti; se `ANTHROPIC_API_KEY` non è configurata, l'onboarding mostra un messaggio chiaro e offre lo skip invece di bloccare l'accesso all'app.
 - Finché l'onboarding non è completato (o saltato), ogni route protetta reindirizza automaticamente a `/onboarding`.
 
+## Mascotte animata e avatar personalizzato
+
+Un piccolo compagno a corpo intero (testa, busto, braccia, gambe) vive nell'app: cammina, salta,
+punta i campi da compilare, balla la macarena sui traguardi, e guida l'utente nei form a due
+tempi (Registrazione, nuovo To-do) con una vera coreografia — punta il campo, festeggia quando lo
+completi, corre e "tira giù" per rivelare i campi successivi (nascosti finché non serve, con un
+fallback di sicurezza che li mostra comunque entro pochi secondi anche se l'animazione fallisce).
+
+Da **Altro → Personalizza il tuo avatar** l'utente può caricare una foto: i colori dominanti
+vengono letti localmente via `<canvas>` nel browser e applicati al personaggio (colore corpo,
+colore occhi/accento). **La foto non viene mai inviata al server né salvata** — solo i due colori
+esadecimali scelti finiscono in `userSettings.avatarSkinColor` / `avatarAccentColor`.
+
 ## Stato di avanzamento moduli
 
 | Modulo                     | Stato                                     |
 | --------------------------- | ------------------------------------------ |
 | Autenticazione multi-utente | ✅ Completo                                |
 | Onboarding con assistente vocale | ✅ Completo (richiede `ANTHROPIC_API_KEY`) |
+| Mascotte animata + avatar personalizzato | ✅ Completo                    |
 | Dashboard / shell           | ✅ Completo                                |
 | To-do list                  | ✅ Completo (CRUD, priorità, scadenza)     |
 | Routine / abitudini         | ✅ MVP (tracking giornaliero + streak semplice) |
