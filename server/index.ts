@@ -6,6 +6,7 @@ import { serveStatic } from "./static";
 const app = express();
 const httpServer = createServer(app);
 
+app.set("trust proxy", 1);
 app.set("etag", false);
 app.use("/api", (_req, res, next) => {
   res.set("Cache-Control", "no-store");
