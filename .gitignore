@@ -6,6 +6,5 @@ dist
 *.db-wal
 .env
 .env.local
-migrations/meta
 *.log
 .DS_Store
