@@ -9,12 +9,25 @@ interface RobotProps {
   pointDir?: "left" | "right";
   size?: number;
   className?: string;
+  /** custom body color extracted from a user photo — falls back to the default theme tone */
+  skinColor?: string;
+  /** custom eye/accent color extracted from a user photo — falls back to the default theme tone */
+  accentColor?: string;
 }
 
 const EQ_BARS = [0, 0.15, 0.3, 0.45];
 
-export function Robot({ action = "idle", face = "idle", pointDir = "left", size = 68, className }: RobotProps) {
-  const pupilColor = face === "listening" ? "hsl(var(--warning))" : "hsl(var(--primary))";
+export function Robot({
+  action = "idle",
+  face = "idle",
+  pointDir = "left",
+  size = 68,
+  className,
+  skinColor,
+  accentColor,
+}: RobotProps) {
+  const bodyFill = skinColor || "hsl(var(--secondary))";
+  const pupilColor = face === "listening" ? "hsl(var(--warning))" : accentColor || "hsl(var(--primary))";
   const pupilRadius = face === "listening" ? 2.9 : 2.4;
   const bigSmile = action === "laugh" || action === "dance" || action === "jump";
 
@@ -79,29 +92,29 @@ export function Robot({ action = "idle", face = "idle", pointDir = "left", size 
 
         {/* legs (behind torso) */}
         <g className={leftLegClass} style={leftLegStyle}>
-          <rect x="13" y="48" width="6" height="19" rx="3" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+          <rect x="13" y="48" width="6" height="19" rx="3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
           <ellipse cx="16" cy="68" rx="4" ry="2.4" fill="hsl(var(--muted-foreground))" />
         </g>
         <g className={rightLegClass} style={rightLegStyle}>
-          <rect x="21" y="48" width="6" height="19" rx="3" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+          <rect x="21" y="48" width="6" height="19" rx="3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
           <ellipse cx="24" cy="68" rx="4" ry="2.4" fill="hsl(var(--muted-foreground))" />
         </g>
 
         {/* torso */}
-        <rect x="11" y="26" width="18" height="23" rx="7" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+        <rect x="11" y="26" width="18" height="23" rx="7" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
 
         {/* arms (drawn after torso so they stay visible in every rotated pose) */}
         <g className={leftArmClass} style={leftArmStyle}>
-          <rect x="7" y="30" width="6" height="17" rx="3" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+          <rect x="7" y="30" width="6" height="17" rx="3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
           <circle cx="10" cy="48" r="3.1" fill="hsl(var(--muted-foreground))" />
         </g>
         <g className={rightArmClass} style={rightArmStyle}>
-          <rect x="27" y="30" width="6" height="17" rx="3" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+          <rect x="27" y="30" width="6" height="17" rx="3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
           <circle cx="30" cy="48" r="3.1" fill="hsl(var(--muted-foreground))" />
         </g>
 
         {/* head */}
-        <circle cx="20" cy="15" r="11" fill="hsl(var(--secondary))" stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+        <circle cx="20" cy="15" r="11" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
         <circle cx="7" cy="15" r="2.4" fill="hsl(var(--muted-foreground))" />
         <circle cx="33" cy="15" r="2.4" fill="hsl(var(--muted-foreground))" />
 
@@ -130,7 +143,7 @@ export function Robot({ action = "idle", face = "idle", pointDir = "left", size 
                 width="2.3"
                 height="6.5"
                 rx="1.1"
-                fill="hsl(var(--primary))"
+                fill={accentColor || "hsl(var(--primary))"}
                 style={{ transformOrigin: `${14.5 + i * 4 + 1.1}px 21.8px`, animationDelay: `${delay}s` }}
               />
             ))}
