@@ -1,3 +1,30 @@
+import { apiRequest } from "@/lib/queryClient";
+
+let currentAudio: HTMLAudioElement | null = null;
+
+/** Tries the server-side AI voice (ElevenLabs) — returns null if unavailable so callers can fall back. */
+async function speakWithAi(text: string, onStart?: () => void, onEnd?: () => void): Promise<boolean> {
+  try {
+    const res = await apiRequest("POST", "/api/speech/synthesize", { text });
+    const blob = await res.blob();
+    const audio = new Audio(URL.createObjectURL(blob));
+    currentAudio = audio;
+    audio.onplay = () => onStart?.();
+    audio.onended = () => {
+      URL.revokeObjectURL(audio.src);
+      onEnd?.();
+    };
+    audio.onerror = () => {
+      URL.revokeObjectURL(audio.src);
+      onEnd?.();
+    };
+    await audio.play();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 let voicesPromise: Promise<SpeechSynthesisVoice[]> | null = null;
 
 /** Voice lists load asynchronously in most browsers — wait for `voiceschanged` if needed. */
@@ -38,11 +65,19 @@ async function getBestItalianVoice(): Promise<SpeechSynthesisVoice | undefined> 
 }
 
 export async function speak(text: string, onStart?: () => void, onEnd?: () => void) {
-  if (!("speechSynthesis" in window) || !text) {
+  if (!text) {
     onEnd?.();
     return;
   }
-  window.speechSynthesis.cancel();
+  stopSpeaking();
+
+  const spokenByAi = await speakWithAi(text, onStart, onEnd);
+  if (spokenByAi) return;
+
+  if (!("speechSynthesis" in window)) {
+    onEnd?.();
+    return;
+  }
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "it-IT";
   utterance.rate = 1;
@@ -57,6 +92,10 @@ export async function speak(text: string, onStart?: () => void, onEnd?: () => vo
 
 export function stopSpeaking() {
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
 }
 
 type SpeechRecognitionCtor = new () => SpeechRecognition;

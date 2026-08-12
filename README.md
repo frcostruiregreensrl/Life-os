@@ -62,6 +62,8 @@ cp .env.example .env
 | `NODE_ENV`        | No                     | `development` / `production`                             |
 | `ANTHROPIC_API_KEY` | Sì, per l'onboarding vocale | Chiave API Claude usata dall'assistente di configurazione al primo avvio. Senza questa variabile l'onboarding mostra un errore e l'utente può comunque saltarlo. |
 | `ANTHROPIC_ONBOARDING_MODEL` | No (default `claude-sonnet-5`) | Modello Claude usato per la conversazione di onboarding |
+| `ELEVENLABS_API_KEY` | No | Voce AI (ElevenLabs) per l'assistente vocale, molto più naturale della sintesi vocale del browser. Senza questa variabile l'app usa automaticamente la voce del browser — nessuna rottura, solo meno fluida. |
+| `ELEVENLABS_VOICE_ID` | No (default voce "Rachel") | ID di una voce ElevenLabs specifica da usare al posto di quella di default |
 
 **Come ottenere `ANTHROPIC_API_KEY`** (è una chiave API a consumo, diversa dall'abbonamento a
 Claude.ai — se non l'hai mai usata dovrai registrare una carta, l'onboarding costa pochi centesimi
@@ -76,6 +78,16 @@ a conversazione):
 5. In produzione (Railway) imposta la stessa variabile nelle **Variables** del servizio, non nel
    file `.env` (che resta solo per lo sviluppo locale).
 
+**Come ottenere `ELEVENLABS_API_KEY`** (a consumo, in base ai caratteri sintetizzati):
+
+1. Vai su [elevenlabs.io](https://elevenlabs.io), crea un account e attiva un piano (c'è un piano
+   gratuito con un numero limitato di caratteri al mese, utile per provare).
+2. Nel profilo (icona in alto a destra) → **API Keys**, crea una chiave e copiala.
+3. Incollala in `.env` come `ELEVENLABS_API_KEY=...` (o nelle Variables di Railway in produzione).
+4. Il testo delle risposte dell'assistente viene inviato a ElevenLabs solo per generare l'audio —
+   se preferisci non usare un servizio esterno, lascia questa variabile vuota: l'app userà
+   automaticamente la voce del browser.
+
 ## Autenticazione
 
 Autenticazione multi-utente con email + password, hashing con `scrypt` (nativo Node, salted) e sessioni server-side (`express-session`, cookie httpOnly). Ogni riga di dati nel database è collegata a `userId`: ogni utente vede e modifica solo i propri dati.
@@ -85,7 +97,7 @@ Autenticazione multi-utente con email + password, hashing con `scrypt` (nativo N
 Al primo accesso (subito dopo la registrazione, prima di vedere la dashboard) l'utente viene guidato in `/onboarding`: un assistente conversazionale basato su Claude (Anthropic, con tool use) fa qualche domanda a voce — orario di fine lavoro, obiettivi, quali moduli attivare tra dieta/salute/agenda/spese, luoghi chiave, target nutrizionali, obiettivo di sonno, ed eventuale tracking del ciclo mestruale (opzionale, disattivato di default) — e configura davvero l'app scrivendo nel database mentre parla, non solo a fine conversazione.
 
 Dettagli tecnici:
-- Riconoscimento vocale in ingresso (`SpeechRecognition`, con fallback a testo se il browser non lo supporta) e sintesi vocale in uscita (`speechSynthesis`) — nessun servizio esterno per voce, tutto nel browser.
+- Riconoscimento vocale in ingresso (`SpeechRecognition`, con fallback a testo se il browser non lo supporta). In uscita, se `ELEVENLABS_API_KEY` è configurata usa una voce AI naturale (server-side, `server/routes/speech.ts`); altrimenti usa in automatico la sintesi vocale del browser (`speechSynthesis`, tutto locale, nessun costo) scegliendo la voce italiana migliore disponibile sul dispositivo.
 - Il "cervello" della conversazione è server-side (`server/onboarding.ts`), usa il tool use di Claude per chiamare funzioni tipizzate (`update_profile`, `set_enabled_modules`, `add_place`, `set_nutrition_targets`, `set_sleep_goal`, `enable_cycle_tracking`, `finish_onboarding`) che scrivono su `userSettings`, `places`, `nutritionTargets`.
 - L'utente può sempre saltare (`Salta per ora`) e completare la configurazione più avanti; se `ANTHROPIC_API_KEY` non è configurata, l'onboarding mostra un messaggio chiaro e offre lo skip invece di bloccare l'accesso all'app.
 - Finché l'onboarding non è completato (o saltato), ogni route protetta reindirizza automaticamente a `/onboarding`.
