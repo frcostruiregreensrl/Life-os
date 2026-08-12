@@ -2,10 +2,15 @@ import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 import * as schema from "@shared/schema";
 
-const sqlite = new Database(process.env.DATABASE_URL || "./data.db");
+const dbPath = process.env.DATABASE_URL || "./data.db";
+// better-sqlite3 doesn't create the parent directory (e.g. a fresh Railway volume mount) itself
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
+const sqlite = new Database(dbPath);
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
 
