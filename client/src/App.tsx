@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
@@ -12,8 +13,11 @@ import Dashboard from "@/pages/Dashboard";
 import Todos from "@/pages/Todos";
 import Habits from "@/pages/Habits";
 import More from "@/pages/More";
-import AvatarSettings from "@/pages/AvatarSettings";
 import NotFound from "@/pages/NotFound";
+
+// caricata a parte: trascina con sé la libreria di riconoscimento volto (~600kB),
+// che deve pesare solo su chi visita davvero questa pagina
+const AvatarSettings = lazy(() => import("@/pages/AvatarSettings"));
 
 const COMPANION_EXCLUDED_PATHS = ["/onboarding", "/register", "/todos"];
 
@@ -54,7 +58,9 @@ function App() {
           </Route>
           <Route path="/avatar">
             <ProtectedRoute>
-              <AvatarSettings />
+              <Suspense fallback={<div className="flex min-h-screen items-center justify-center text-muted-foreground">Caricamento...</div>}>
+                <AvatarSettings />
+              </Suspense>
             </ProtectedRoute>
           </Route>
           <Route path="/dieta">

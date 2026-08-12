@@ -34,7 +34,7 @@ function computeTarget(el: HTMLElement): Pos {
 }
 
 export function FormGuide({ waypoints, step }: FormGuideProps) {
-  const { skinColor, accentColor } = useAvatarColors();
+  const { skinColor, accentColor, hairColor, faceWidthRatio } = useAvatarColors();
   const [pos, setPos] = useState<Pos | null>(null);
   const [action, setAction] = useState<Action>("point");
   const [pointDir, setPointDir] = useState<"left" | "right">("left");
@@ -119,7 +119,15 @@ export function FormGuide({ waypoints, step }: FormGuideProps) {
       className={cn("pointer-events-none fixed z-40 transition-all ease-in-out")}
       style={{ top: pos.top, left: pos.left, transitionDuration: action === "walk" ? "560ms" : "200ms" }}
     >
-      <Robot action={action} pointDir={pointDir} size={SIZE} skinColor={skinColor} accentColor={accentColor} />
+      <Robot
+        action={action}
+        pointDir={pointDir}
+        size={SIZE}
+        skinColor={skinColor}
+        accentColor={accentColor}
+        hairColor={hairColor}
+        faceWidthRatio={faceWidthRatio}
+      />
     </div>
   );
 }

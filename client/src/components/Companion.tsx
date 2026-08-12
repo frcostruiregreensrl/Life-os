@@ -20,7 +20,7 @@ function randomPoint() {
 }
 
 export function Companion() {
-  const { skinColor, accentColor } = useAvatarColors();
+  const { skinColor, accentColor, hairColor, faceWidthRatio } = useAvatarColors();
   const [pos, setPos] = useState(randomPoint);
   const [action, setAction] = useState<Action>("idle");
   const [message, setMessage] = useState<string | undefined>();
@@ -68,7 +68,14 @@ export function Companion() {
           {message}
         </span>
       )}
-      <Robot action={action} size={SIZE} skinColor={skinColor} accentColor={accentColor} />
+      <Robot
+        action={action}
+        size={SIZE}
+        skinColor={skinColor}
+        accentColor={accentColor}
+        hairColor={hairColor}
+        faceWidthRatio={faceWidthRatio}
+      />
     </div>
   );
 }

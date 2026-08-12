@@ -3,26 +3,32 @@ import { Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Upload, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { extractPalette } from "@/lib/avatarColors";
+import { extractFaceProfile, type FaceProfile } from "@/lib/faceExtract";
 import { useAvatarColors } from "@/lib/useAvatarColors";
 import { Robot, type Action } from "@/components/Robot";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function AvatarSettings() {
   const queryClient = useQueryClient();
   const current = useAvatarColors();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [palette, setPalette] = useState<string[]>([]);
-  const [skinColor, setSkinColor] = useState<string | undefined>(current.skinColor);
-  const [accentColor, setAccentColor] = useState<string | undefined>(current.accentColor);
+  const [profile, setProfile] = useState<FaceProfile | null>(
+    current.skinColor
+      ? { skinColor: current.skinColor, hairColor: current.hairColor ?? "#3a2c22", faceWidthRatio: current.faceWidthRatio ?? 0.85 }
+      : null,
+  );
   const [previewAction, setPreviewAction] = useState<Action>("idle");
   const [extracting, setExtracting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const saveMutation = useMutation({
-    mutationFn: async (data: { avatarSkinColor: string | null; avatarAccentColor: string | null }) => {
+    mutationFn: async (data: {
+      avatarSkinColor: string | null;
+      avatarAccentColor: string | null;
+      avatarHairColor: string | null;
+      avatarFaceWidthRatio: number | null;
+    }) => {
       const res = await apiRequest("PATCH", "/api/settings/avatar", data);
       return res.json();
     },
@@ -37,19 +43,31 @@ export default function AvatarSettings() {
     setError(null);
     setExtracting(true);
     try {
-      const colors = await extractPalette(file);
-      if (colors.length === 0) {
-        setError("Non sono riuscito a trovare colori chiari in questa foto. Provane un'altra, magari più luminosa.");
+      const detected = await extractFaceProfile(file);
+      if (!detected) {
+        setError("Non sono riuscito a riconoscere un volto in questa foto. Provane un'altra, con il viso ben visibile e illuminato.");
       } else {
-        setPalette(colors);
-        setSkinColor(colors[0]);
-        setAccentColor(colors[1] ?? colors[0]);
+        setProfile(detected);
       }
     } catch (err) {
       setError("Non sono riuscito a leggere questa immagine.");
     } finally {
       setExtracting(false);
     }
+  }
+
+  function save() {
+    saveMutation.mutate({
+      avatarSkinColor: profile?.skinColor ?? null,
+      avatarAccentColor: profile?.hairColor ?? null,
+      avatarHairColor: profile?.hairColor ?? null,
+      avatarFaceWidthRatio: profile?.faceWidthRatio ?? null,
+    });
+  }
+
+  function reset() {
+    setProfile(null);
+    saveMutation.mutate({ avatarSkinColor: null, avatarAccentColor: null, avatarHairColor: null, avatarFaceWidthRatio: null });
   }
 
   return (
@@ -62,12 +80,20 @@ export default function AvatarSettings() {
       <div>
         <h2 className="font-display text-2xl text-foreground">Personalizza il tuo avatar</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Carica una foto: ne leggo solo i colori dominanti, qui nel browser — la foto non viene mai inviata né salvata.
+          Carica una foto del tuo viso: lo riconosco e ne ricavo una versione stilizzata — forma del viso, carnagione e
+          capelli — tutto qui nel browser. La foto non viene mai inviata né salvata da nessuna parte.
         </p>
       </div>
 
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-6">
-        <Robot action={previewAction} size={100} skinColor={skinColor} accentColor={accentColor} />
+        <Robot
+          action={previewAction}
+          size={100}
+          skinColor={profile?.skinColor}
+          accentColor={profile?.hairColor}
+          hairColor={profile?.hairColor}
+          faceWidthRatio={profile?.faceWidthRatio}
+        />
         <p className="font-data text-xs text-muted-foreground">anteprima</p>
       </div>
 
@@ -84,72 +110,18 @@ export default function AvatarSettings() {
       />
       <Button variant="secondary" className="gap-2" onClick={() => fileInputRef.current?.click()} disabled={extracting}>
         <Upload className="h-4 w-4" />
-        {extracting ? "Leggo i colori..." : "Carica una foto"}
+        {extracting ? "Riconosco il volto..." : "Carica una foto"}
       </Button>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      {palette.length > 0 && (
-        <>
-          <div>
-            <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Colore corpo</p>
-            <div className="flex gap-2">
-              {palette.map((color) => (
-                <button
-                  key={`skin-${color}`}
-                  onClick={() => setSkinColor(color)}
-                  className={cn(
-                    "h-10 w-10 rounded-full border-2 transition-transform",
-                    skinColor === color ? "scale-110 border-primary" : "border-transparent",
-                  )}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Usa ${color} come colore corpo`}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Colore accento (occhi)</p>
-            <div className="flex gap-2">
-              {palette.map((color) => (
-                <button
-                  key={`accent-${color}`}
-                  onClick={() => setAccentColor(color)}
-                  className={cn(
-                    "h-10 w-10 rounded-full border-2 transition-transform",
-                    accentColor === color ? "scale-110 border-primary" : "border-transparent",
-                  )}
-                  style={{ backgroundColor: color }}
-                  aria-label={`Usa ${color} come colore accento`}
-                />
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
       <div className="flex gap-2">
-        <Button
-          className="flex-1 gap-2"
-          disabled={saveMutation.isPending || (!skinColor && !accentColor)}
-          onClick={() =>
-            saveMutation.mutate({ avatarSkinColor: skinColor ?? null, avatarAccentColor: accentColor ?? null })
-          }
-        >
+        <Button className="flex-1 gap-2" disabled={saveMutation.isPending || !profile} onClick={save}>
           <Sparkles className="h-4 w-4" />
           {saveMutation.isPending ? "Salvo..." : "Salva"}
         </Button>
-        {(current.skinColor || current.accentColor) && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setSkinColor(undefined);
-              setAccentColor(undefined);
-              setPalette([]);
-              saveMutation.mutate({ avatarSkinColor: null, avatarAccentColor: null });
-            }}
-          >
+        {(current.skinColor || current.hairColor) && (
+          <Button variant="ghost" onClick={reset}>
             Ripristina
           </Button>
         )}

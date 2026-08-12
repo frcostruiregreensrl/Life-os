@@ -8,5 +8,7 @@ export function useAvatarColors() {
   return {
     skinColor: data?.settings?.avatarSkinColor ?? undefined,
     accentColor: data?.settings?.avatarAccentColor ?? undefined,
+    hairColor: data?.settings?.avatarHairColor ?? undefined,
+    faceWidthRatio: data?.settings?.avatarFaceWidthRatio ?? undefined,
   };
 }

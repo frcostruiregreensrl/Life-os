@@ -92,10 +92,17 @@ tempi (Registrazione, nuovo To-do) con una vera coreografia — punta il campo, 
 completi, corre e "tira giù" per rivelare i campi successivi (nascosti finché non serve, con un
 fallback di sicurezza che li mostra comunque entro pochi secondi anche se l'animazione fallisce).
 
-Da **Altro → Personalizza il tuo avatar** l'utente può caricare una foto: i colori dominanti
-vengono letti localmente via `<canvas>` nel browser e applicati al personaggio (colore corpo,
-colore occhi/accento). **La foto non viene mai inviata al server né salvata** — solo i due colori
-esadecimali scelti finiscono in `userSettings.avatarSkinColor` / `avatarAccentColor`.
+Da **Altro → Personalizza il tuo avatar** l'utente può caricare una foto del proprio viso: il
+riconoscimento facciale (face-api.js, rete tiny-face-detector + landmark a 68 punti, pesi
+self-hosted in `client/public/models`) gira interamente nel browser via tensorflow.js — nessun
+servizio esterno, nessun upload. Dal volto rilevato vengono ricavati carnagione, colore capelli e
+proporzioni del viso, applicati al personaggio al posto del vecchio aspetto da robottino generico
+(niente più antenna/orecchie robotiche: testa modellata sulla forma rilevata, capelli stilizzati,
+occhi con lo stesso sistema di espressioni di prima — incluso lo stato "in ascolto" quando l'utente
+parla con l'assistente vocale in onboarding). **La foto non viene mai inviata al server né salvata**
+— solo i valori derivati (`avatarSkinColor`, `avatarHairColor`, `avatarAccentColor`,
+`avatarFaceWidthRatio`) finiscono in `userSettings`. La libreria di riconoscimento (~600kB) è
+caricata solo su questa pagina (`React.lazy`), non pesa sul resto dell'app.
 
 ## Stato di avanzamento moduli
 

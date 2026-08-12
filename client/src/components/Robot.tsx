@@ -13,6 +13,10 @@ interface RobotProps {
   skinColor?: string;
   /** custom eye/accent color extracted from a user photo — falls back to the default theme tone */
   accentColor?: string;
+  /** hair color extracted from a user photo — falls back to a neutral dark tone */
+  hairColor?: string;
+  /** face bounding-box width/height from photo detection — widens or narrows the head shape */
+  faceWidthRatio?: number;
 }
 
 const EQ_BARS = [0, 0.15, 0.3, 0.45];
@@ -25,11 +29,25 @@ export function Robot({
   className,
   skinColor,
   accentColor,
+  hairColor,
+  faceWidthRatio,
 }: RobotProps) {
   const bodyFill = skinColor || "hsl(var(--secondary))";
+  const hairFill = hairColor || "hsl(var(--muted-foreground))";
   const pupilColor = face === "listening" ? "hsl(var(--warning))" : accentColor || "hsl(var(--primary))";
   const pupilRadius = face === "listening" ? 2.9 : 2.4;
   const bigSmile = action === "laugh" || action === "dance" || action === "jump";
+
+  // 0 (narrow/long face) .. 1 (round face) — drives head rx/ry so the head shape reflects the photo
+  const shapeT = Math.min(1, Math.max(0, ((faceWidthRatio ?? 0.85) - 0.7) / (1.15 - 0.7)));
+  const headRx = 9.5 + shapeT * 2;
+  const headRy = 12.5 - shapeT * 2.5;
+  const headCx = 20;
+  const headCy = 15;
+  const hairPath = `M ${headCx - headRx} ${headCy - headRy * 0.1}
+    C ${headCx - headRx} ${headCy - headRy * 1.2}, ${headCx + headRx} ${headCy - headRy * 1.2}, ${headCx + headRx} ${headCy - headRy * 0.1}
+    C ${headCx + headRx * 0.85} ${headCy - headRy * 0.6}, ${headCx - headRx * 0.85} ${headCy - headRy * 0.6}, ${headCx - headRx} ${headCy - headRy * 0.1}
+    Z`;
 
   const leftArmStyle: React.CSSProperties = { transformOrigin: "13px 30px" };
   const rightArmStyle: React.CSSProperties = { transformOrigin: "27px 30px" };
@@ -86,9 +104,6 @@ export function Robot({
       )}
 
       <svg width={size} height={size} viewBox="0 0 40 76" fill="none" className={bodyClass}>
-        {/* antenna */}
-        <line x1="20" y1="6" x2="20" y2="2" stroke="hsl(var(--muted-foreground))" strokeWidth="1.4" />
-        <circle cx="20" cy="1" r="1.8" className="robot-antenna-light" fill="hsl(var(--warning))" />
 
         {/* legs (behind torso) */}
         <g className={leftLegClass} style={leftLegStyle}>
@@ -114,9 +129,10 @@ export function Robot({
         </g>
 
         {/* head */}
-        <circle cx="20" cy="15" r="11" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
-        <circle cx="7" cy="15" r="2.4" fill="hsl(var(--muted-foreground))" />
-        <circle cx="33" cy="15" r="2.4" fill="hsl(var(--muted-foreground))" />
+        <ellipse cx={headCx - headRx * 0.95} cy={headCy} rx="1.7" ry="2.3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.2" />
+        <ellipse cx={headCx + headRx * 0.95} cy={headCy} rx="1.7" ry="2.3" fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.2" />
+        <ellipse cx={headCx} cy={headCy} rx={headRx} ry={headRy} fill={bodyFill} stroke="hsl(var(--muted-foreground))" strokeWidth="1.6" />
+        <path d={hairPath} fill={hairFill} />
 
         <g className={face === "idle" && action !== "walk" ? "robot-eye-blink" : undefined} style={{ transformOrigin: "20px 14px" }}>
           <circle cx="14.5" cy="14" r="5.6" fill="hsl(var(--background))" />

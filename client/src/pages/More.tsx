@@ -29,7 +29,14 @@ export default function More() {
       <Link href="/avatar">
         <Card className="border-border/80 transition-colors hover:border-primary/40">
           <CardContent className="flex items-center gap-3 p-4">
-            <Robot action="idle" size={36} skinColor={avatarColors.skinColor} accentColor={avatarColors.accentColor} />
+            <Robot
+              action="idle"
+              size={36}
+              skinColor={avatarColors.skinColor}
+              accentColor={avatarColors.accentColor}
+              hairColor={avatarColors.hairColor}
+              faceWidthRatio={avatarColors.faceWidthRatio}
+            />
             <span className="flex-1 text-sm font-medium">Personalizza il tuo avatar</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </CardContent>

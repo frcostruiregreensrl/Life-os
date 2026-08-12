@@ -29,7 +29,7 @@ export default function Onboarding() {
   const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
-  const { skinColor, accentColor } = useAvatarColors();
+  const { skinColor, accentColor, hairColor, faceWidthRatio } = useAvatarColors();
 
   const [chat, setChat] = useState<ChatMessage[]>([]);
   const [history, setHistory] = useState<unknown[]>([]);
@@ -170,6 +170,8 @@ export default function Onboarding() {
             size={52}
             skinColor={skinColor}
             accentColor={accentColor}
+            hairColor={hairColor}
+            faceWidthRatio={faceWidthRatio}
           />
           <div>
             <span className="font-display block text-sm text-foreground">Configurazione Life OS</span>

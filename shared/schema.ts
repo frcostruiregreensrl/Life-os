@@ -141,6 +141,8 @@ export const userSettings = sqliteTable("user_settings", {
   expensesModuleEnabled: integer("expenses_module_enabled", { mode: "boolean" }).notNull().default(false),
   avatarSkinColor: text("avatar_skin_color"),
   avatarAccentColor: text("avatar_accent_color"),
+  avatarHairColor: text("avatar_hair_color"),
+  avatarFaceWidthRatio: real("avatar_face_width_ratio"),
 });
 
 export type UserSettings = typeof userSettings.$inferSelect;
@@ -339,6 +341,8 @@ const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Colore non valido");
 export const updateAvatarSchema = z.object({
   avatarSkinColor: hexColor.nullable(),
   avatarAccentColor: hexColor.nullable(),
+  avatarHairColor: hexColor.nullable(),
+  avatarFaceWidthRatio: z.number().min(0.5).max(1.5).nullable(),
 });
 
 export type User = typeof users.$inferSelect;
