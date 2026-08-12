@@ -5,6 +5,7 @@ import { queryClient } from "@/lib/queryClient";
 import { AuthProvider } from "@/lib/auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Companion } from "@/components/Companion";
+import { useAutoTheme } from "@/lib/useAutoTheme";
 import { Placeholder } from "@/pages/Placeholder";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -27,10 +28,16 @@ function GlobalCompanion() {
   return <Companion />;
 }
 
+function ThemeManager() {
+  useAutoTheme();
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <ThemeManager />
         <GlobalCompanion />
         <Switch>
           <Route path="/login" component={Login} />

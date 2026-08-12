@@ -66,6 +66,33 @@
     --ring: 185 79% 58%;
     --radius: 1rem;
   }
+
+  /* tema chiaro, attivo di giorno in automatico (vedi useAutoTheme) o forzato dall'utente */
+  :root[data-theme="light"] {
+    --background: 210 25% 98%;
+    --foreground: 202 30% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 202 30% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 202 30% 12%;
+    --primary: 185 75% 38%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 20% 94%;
+    --secondary-foreground: 202 30% 15%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 202 12% 42%;
+    --accent: 210 20% 94%;
+    --accent-foreground: 202 30% 15%;
+    --destructive: 5 65% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --warning: 37 90% 42%;
+    --warning-foreground: 0 0% 100%;
+    --success: 143 55% 33%;
+    --success-foreground: 0 0% 100%;
+    --border: 210 18% 88%;
+    --input: 210 18% 88%;
+    --ring: 185 75% 38%;
+  }
 }
 
 @layer base {

@@ -13,11 +13,17 @@ Life OS è una web app personale (PWA) per gestire la vita quotidiana a 360 grad
 ## Identità visiva
 
 Layout mobile-first stile app nativa (tab bar in basso, niente sidebar da dashboard web), tema
-scuro "centro di controllo": fondo quasi nero, ciano come colore d'azione primario, ambra per gli
-stati di media priorità/attenzione. Tipografia a tre ruoli: **Tektur** per titoli e numeri grandi,
+"centro di controllo": ciano come colore d'azione primario, ambra per gli stati di media
+priorità/attenzione. Tipografia a tre ruoli: **Tektur** per titoli e numeri grandi,
 **Instrument Sans** per l'interfaccia, **Red Hat Mono** per dati tabulari (streak, date, orari).
 I font sono self-hosted in `client/public/fonts` (licenza OFL, vedi i rispettivi `*-OFL.txt`) per
 funzionare offline da PWA installata.
+
+Il tema passa automaticamente da scuro (sera/notte) a chiaro (giorno, 7:00–20:00 ora locale del
+dispositivo) senza bisogno di ricaricare la pagina (`client/src/lib/useAutoTheme.ts`, ricontrollato
+ogni 5 minuti). L'utente può forzare uno dei due tramite `userSettings.theme`
+(`system` | `light` | `dark` — di default `system`, cioè automatico); al momento non c'è ancora un
+selettore in UI per cambiarlo, va impostato via API.
 
 ## Setup locale
 
